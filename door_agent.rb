@@ -2,60 +2,47 @@
 require 'json'
 require 'logger'
 require 'time'
+require 'socket'
+require 'ostruct'
+require 'singleton'
 require 'bundler'
 Bundler.require
 
 class DoorAgent
 
-  DEFAULTS = {
-    aws_region: 'us-east-1'
-  }
-
-  MESSAGE_FORMAT = %r{
-    door:(?<id> \w+)
-    \s+
-    state:(?<id> \w+)
+  SERIAL_PROTOCOL = %r{
+    ^
+    sensor:(?<sensor> \d+)
+    \s
+    state:(?<state> (open|closed))
+    $
   }x
 
   def initialize(args = {})
-    env = Hash[%i[
-      aws_key_id
-      aws_access_key
-      s3_bucket
-      pusher_app_id
-      pusher_key
-      pusher_secret
-    ].map{ |key| [key, ENV["DOORS_#{key.to_s.upcase}"]] }]
-
-    @options = DEFAULTS.merge(env).merge(args.to_hash)
-
-    Pusher.app_id     = @options.delete! :pusher_app_id
-    Pusher.key        = @options.delete! :pusher_key
-    Pusher.secret     = @options.delete! :pusher_secret
-    Pusher.encrypted  = true
-
-    AWS.config(
-      access_key_id:      @options.delete!(:aws_key_id),
-      secret_access_key:  @options.delete!(:aws_access_key),
-      region:             @options.delete!(:aws_region)
-    )
-
-    setup_bucket
+    @config = Configuration.instance.merge!(args)
 
     @logger = Logger.new(STDERR)
-  end
-  attr_accessor :options, :logger, :bucket
 
-  def setup_bucket
-    @bucket = AWS::S3.new.buckets.create(@options.assert! :s3_bucket)
-    # ap @bucket
-    # @bucket.configure_website
+    Pusher.app_id     = @config.delete!(:pusher_app_id)
+    Pusher.key        = @config.delete!(:pusher_key)
+    Pusher.secret     = @config.delete!(:pusher_secret)
+    Pusher.encrypted  = true
+    Pusher.logger     = @logger
+
+    AWS.config(
+      access_key_id:      @config.delete!(:aws_key_id),
+      secret_access_key:  @config.delete!(:aws_access_key),
+      logger:             @logger
+    )
+
+    @config.assert! :s3_bucket
   end
+  attr_accessor :config, :logger
 
   def run
-    SerialPort.open(options.delete!(:serial, 9600, 8, 1, SerialPort::NONE)) do |serial_port|
-      while string = serial_port.gets.chomp
-        if message = message_from_string(string)
+    SerialPort.open(@config.assert!(:serial), 9600, 8, 1, SerialPort::NONE) do |serial_port|
+      while string = serial_port.gets
+        if message = Message.new_from_string(string)
           logger.ap message
           announce(message)
         else
@@ -65,29 +52,23 @@ class DoorAgent
     end
   end
 
-  def message_from_string(string)
-    match = string.scan(MESSAGE_FORMAT)
-    message = match.hash.slice(*%i[ id state ])
-    if match.has_key(:id) && match.has_key(:state)
-      return message
-    else
-      return false
-    end
-  end
-
   def announce(message)
-    message.merge! timestamp: Time.now.utc.iso8601
-    S3Worker.new.async.perform(@options.slice(:s3_bucket).merge(message))
-    PusherWorker.new.async.perform(message)
+    case message
+    when String
+      announce Message.new_from_string(message)
+    when Message
+      S3Worker.new.async.perform(message)
+      PusherWorker.new.async.perform(message)
+    end
   end
 
   class S3Worker
     include SuckerPunch::Job
 
-    def perform(message = {})
-      bucket = AWS::S3.new.buckets[message[:s3_bucket]]
-      data = message.slice(*%i[ id state timestamp ]).to_jsonp("setup")
-      bucket.objects["#{message[:id]}.json"].write(data,
+    def perform(message)
+      bucket = AWS::S3.new.buckets[::DoorAgent::Configuration.instance.assert!(:s3_bucket)]
+      data = message.to_jsonp("setup")
+      bucket.objects[message.filename].write(data,
         acl: :public_read,
         content_type: 'application/json',
         content_length: data.length
@@ -98,44 +79,71 @@ class DoorAgent
   class PusherWorker
     include SuckerPunch::Job
 
-    def perform(message = {})
-      Pusher.trigger('doors', 'state_change', message.slice(*%i[ id state timestamp ]))
+    def perform(message)
+      Pusher.trigger('doors', 'state_change', message)
     end
   end
 
-end
+  class Message < Hash
 
-class Hash
-
-  # Raise an error when deleting a non-existent key.
-  def delete!(key)
-    assert! key
-    delete key
-  end
-
-  # Assert that a given key exists or raise an exception.
-  def assert!(key)
-    if has_key? key
-      fetch(key)
-    else
-      raise ArgumentError.new("#{key} is required")
+    def self.new_from_string(string)
+      if match = ::DoorAgent::SERIAL_PROTOCOL.match(string.chomp)
+        new.merge( sensor: match[:sensor].to_i, state: match[:state] )
+      end
     end
+
+    def initialize
+      merge!(
+        hostname: Socket.gethostname,
+        timestamp: Time.now.utc.iso8601
+      )
+    end
+
+    def to_jsonp(function_name)
+      "#{function_name}(#{to_json})\n"
+    end
+
+    def filename
+      "#{fetch(:sensor)}.json"
+    end
+
   end
 
-  # Render as JSON passed as argument to named function.
-  def to_jsonp(function_name)
-    "#{function_name}(#{to_json})\n"
-  end
+  class Configuration < Hash
+    include ::Singleton
 
-  # From https://github.com/rails/rails/blob/2ef4d5ed5cbbb2a9266c99535e5f51918ae3e3b6/activesupport/lib/active_support/core_ext/hash/slice.rb#L15-L18
-  def slice(*keys)
-    keys.map! { |key| convert_key(key) } if respond_to?(:convert_key, true)
-    keys.each_with_object(self.class.new) { |k, hash| hash[k] = self[k] if has_key?(k) }
-  end
+    def initialize
+      env = Hash[%i[
+        aws_key_id
+        aws_access_key
+        s3_bucket
+        pusher_app_id
+        pusher_key
+        pusher_secret
+      ].map{ |key| [key, ENV["DOORS_#{key.to_s.upcase}"]] }]
 
+      merge! env
+    end
+
+    # Raise an error when deleting a non-existent key.
+    def delete!(key)
+      assert! key
+      delete key
+    end
+
+    # Assert that a given key exists or raise an exception.
+    def assert!(key)
+      if has_key? key
+        fetch key
+      else
+        raise ArgumentError.new("#{key} is required")
+      end
+    end
+
+  end
 end
 
 if __FILE__ == $0
-  args = Slop.parse(autocreate: true)
+  args = Slop.parse(autocreate: true).to_hash
   DoorAgent.new(args).run
 end
