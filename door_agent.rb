@@ -3,7 +3,6 @@ require 'json'
 require 'logger'
 require 'time'
 require 'socket'
-require 'ostruct'
 require 'singleton'
 require 'bundler'
 Bundler.require
