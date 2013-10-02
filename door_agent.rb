@@ -9,14 +9,6 @@ Bundler.require
 
 class DoorAgent
 
-  SERIAL_PROTOCOL = %r{
-    ^
-    sensor:(?<sensor> \d+)
-    \s
-    state:(?<state> (open|closed))
-    $
-  }x
-
   def initialize(args = {})
     @config = Configuration.instance.merge!(args)
 
@@ -58,7 +50,41 @@ class DoorAgent
     when Message
       S3Worker.new.async.perform(message)
       PusherWorker.new.async.perform(message)
+      true
     end
+  end
+
+  class Message < Hash
+
+    STRING_FORMAT = %r{
+      ^
+      sensor:(?<sensor> \d+)
+      \s
+      state:(?<state> (open|closed))
+      $
+    }x
+
+    def self.new_from_string(string)
+      if match = STRING_FORMAT.match(string.chomp)
+        new.merge( sensor: match[:sensor].to_i, state: match[:state] )
+      end
+    end
+
+    def initialize
+      merge!(
+        hostname: Socket.gethostname,
+        timestamp: Time.now.utc.iso8601
+      )
+    end
+
+    def to_jsonp(function_name)
+      "#{function_name}(#{to_json})\n"
+    end
+
+    def filename
+      "#{fetch(:sensor)}.json"
+    end
+
   end
 
   class S3Worker
@@ -81,31 +107,6 @@ class DoorAgent
     def perform(message)
       Pusher.trigger('doors', 'state_change', message)
     end
-  end
-
-  class Message < Hash
-
-    def self.new_from_string(string)
-      if match = ::DoorAgent::SERIAL_PROTOCOL.match(string.chomp)
-        new.merge( sensor: match[:sensor].to_i, state: match[:state] )
-      end
-    end
-
-    def initialize
-      merge!(
-        hostname: Socket.gethostname,
-        timestamp: Time.now.utc.iso8601
-      )
-    end
-
-    def to_jsonp(function_name)
-      "#{function_name}(#{to_json})\n"
-    end
-
-    def filename
-      "#{fetch(:sensor)}.json"
-    end
-
   end
 
   class Configuration < Hash
