@@ -58,7 +58,7 @@ class DoorAgent
 
     STRING_FORMAT = %r{
       ^
-      sensor:(?<sensor> \d+)
+      door:(?<door> \d+)
       \s
       state:(?<state> (open|closed))
       $
@@ -66,7 +66,7 @@ class DoorAgent
 
     def self.new_from_string(string)
       if match = STRING_FORMAT.match(string.chomp)
-        new.merge( sensor: match[:sensor].to_i, state: match[:state] )
+        new.merge( door: match[:door].to_i, state: match[:state] )
       end
     end
 
@@ -82,7 +82,7 @@ class DoorAgent
     end
 
     def filename
-      "#{fetch(:sensor)}.json"
+      "#{fetch(:door)}.json"
     end
 
   end
@@ -120,6 +120,7 @@ class DoorAgent
         pusher_app_id
         pusher_key
         pusher_secret
+        serial
       ].map{ |key| [key, ENV["DOORS_#{key.to_s.upcase}"]] }]
 
       merge! env
