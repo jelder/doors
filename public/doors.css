@@ -1,0 +1,17 @@
+.container {
+  width: auto;
+  max-width: 680px;
+  padding: 0 15px;
+}
+
+div.status-box {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+/*
+body {
+  color: #cdbfe3;
+  background-color: #563d7c;
+}*/
