@@ -53,7 +53,7 @@ class DoorAgent
       )
 
       if last_change = doors[door]
-        message[:last_duration] = last_change
+        message[:last_change] = last_change
       end
       doors[door] = Time.now
 

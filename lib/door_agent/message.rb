@@ -11,12 +11,12 @@ class DoorAgent
       merge!(hash)
     end
 
-    def to_jsonp(function_name)
+    def to_jsonp(function_name = 'receive')
       "#{function_name}(#{to_json})\n"
     end
 
     def filename
-      "#{fetch(:door)}.json"
+      "#{fetch(:door)}.js"
     end
 
     def announce
@@ -24,7 +24,9 @@ class DoorAgent
         hostname: Socket.gethostname,
         timestamp: Time.now.utc.iso8601
       )
-      return S3Worker.new.async.perform(self), PusherWorker.new.async.perform(self)
+      S3Worker.new.async.perform(self)
+      PusherWorker.new.async.perform(self)
+      true
     end
 
   end
