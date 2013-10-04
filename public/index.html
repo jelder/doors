@@ -29,7 +29,7 @@
 
       var receive = function(message) {
         $('#log').append(
-          '<p class="muted">' + JSON.stringify(message) + "<p/>"
+          '<p>door ' + message.door + ' ' + message.state + ' <time class="timeago" datetime="' + message.timestamp + '">...</time></p>'
         )
       };
 
