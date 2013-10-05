@@ -2,18 +2,17 @@ class DoorAgent
   class S3Worker
     include SuckerPunch::Job
 
+    class << self
+      attr_accessor :bucket
+    end
+
     def perform(message)
-      bucket = AWS::S3.new.buckets[::DoorAgent::Configuration.instance.assert!(:s3_bucket)]
-      data = message.to_jsonp("receive")
-      bucket.objects[message.filename].write(data,
+      self.class.bucket.objects[message.filename].write(
+        message.to_jsonp,
         acl: :public_read,
         content_type: 'application/json',
-        content_length: data.length
+        cache_control: 'must-revalidate, proxy-revalidate'
       )
-      path = File.expand_path(File.join(File.dirname(__FILE__), "../../public/#{message.filename}"))
-      File.open(path, 'w') do |file|
-        file.write(data)
-      end
     end
   end
 end

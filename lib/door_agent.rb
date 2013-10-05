@@ -30,7 +30,7 @@ class DoorAgent
       logger:             @logger
     )
 
-    @config.assert! :s3_bucket
+    S3Worker.bucket = AWS::S3.new.buckets[@config.assert!(:s3_bucket)]
 
     @doors = {}
   end
