@@ -12,7 +12,7 @@ class DoorAgent
       merge!(hash)
     end
 
-    def to_jsonp(function_name = 'receive')
+    def to_jsonp(function_name = 'setup')
       "#{function_name}(#{to_json})\n"
     end
 

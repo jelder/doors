@@ -21,25 +21,27 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
-    <script src="jquery.timeago.js" type="text/javascript"></script>
+    <script src="moment.min.js" type="text/javascript"></script>
     <script>
-      jQuery(document).ready(function() {
-        jQuery("time.timeago").timeago();
-      });
-
+      var configure = function(config){
+        for (door in config.doors) {
+          if (config.hasOwnProperty(door)) {
+            $('#log').append("<p>config" + door + "</p>")
+          }
+        }
+      };
       var receive = function(message) {
         $('#log').append(
-          '<p>door ' + message.door + ' ' + message.state + ' <time class="timeago" datetime="' + message.timestamp + '">...</time></p>'
+          '<p>door ' + message.door + ' ' + message.state + ' ' + message.timestamp + '</p>'
         )
       };
+      var setup = receive
 
       var pusher = new Pusher('cec28eb49dd7904d3bb8');
       var channel = pusher.subscribe('doors');
       channel.bind('state_change', receive);
 
     </script>
-    <!-- Now load our state data -->
-    <script src="1.js"></script>
-    <script src="2.js"></script>
+    <script src="config.js"></script>
   </body>
 </html>
