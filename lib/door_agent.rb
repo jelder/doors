@@ -63,4 +63,15 @@ class DoorAgent
     end
   end
 
+  def demo
+    fake_doors = 3.times.map{ |door| {door: door+1, state:0} }
+    loop do
+      door = fake_doors.sample
+      door[:state] = 1 - door[:state]
+      state = door[:state] == 0 ? 'open' : 'closed'
+      handle_message("door:#{door[:door]} state:#{state}")
+      sleep [1,rand(5)].max
+    end
+  end
+
 end
