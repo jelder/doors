@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Doors</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,37 +13,44 @@
   </head>
   <body>
     <div class="container">
-      <div class="status-box">
+      <div id="doorlist"/>
+      <div id="door-1" class="status-box open">
+        <div class="text-center">
+          <span class="name">Gutenberg</span><br/>
+          <span class="state">open</span> for <span class="time" data-timestamp="2013-10-06T18:37:20Z">...</span>
+        </div>
       </div>
     </div>
-    <div id="log"></div>
 
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
-      receive = function(message) {
-        $('#log').append(
-          '<p>door ' + message.door + ' ' + message.state + ' ' + message.timestamp + '</p>'
-        )
+      create = function(door) {
+        $('#doorlist')
       };
 
-      create_or_update = function(door) {
+      update = function(door) {
 
-      }
+      };
+
+      (function(){
+          $(".time").each(function(i){
+            var timestamp = $(this).data("timestamp");
+            $(this).text(moment(timestamp).fromNow(true));
+          });
+          setTimeout(arguments.callee, 1000);
+      })();
 
       $.getJSON( "config.json", function( config ) {
-        console.log(config);
         $.each( config.states, function( i, url ) {
-          $.getJSON( url, function( state ) {
-            console.log(state);
-          });
+          $.getJSON( url, create);
         });
 
         pusher = new Pusher(config.pusher);
         channel = pusher.subscribe('doors');
-        channel.bind('state_change', create_or_update);
+        channel.bind('state_change', update);
       });
 
     </script>

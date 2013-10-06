@@ -1,8 +1,10 @@
 {
   "pusher": "cec28eb49dd7904d3bb8",
   "states": [
-    "states/jeldair.local/1.json",
-    "states/jeldair.local/2.json",
-    "states/jeldair.local/3.json"
+    { "url": "states/jeldair.local/1.json", "name": "Gutenberg (Nap Room)" },
+    { "url": "states/jeldair.local/2.json", "name": "&frac12; Bathroom" },
+    { "url": "states/jeldair.local/2.json", "name": "Full Bathroom" },
+    { "name": "Galileo" },
+    { "name": "Plato"}
   ]
 }
