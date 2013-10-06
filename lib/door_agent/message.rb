@@ -12,12 +12,8 @@ class DoorAgent
       merge!(hash)
     end
 
-    def to_jsonp(function_name = 'setup')
-      "#{function_name}(#{to_json})\n"
-    end
-
     def filename
-        File.join("states", Socket.gethostname, "#{fetch(:door)}.js")
+        File.join("states", Socket.gethostname, "#{fetch(:door)}.json")
     end
 
     def announce

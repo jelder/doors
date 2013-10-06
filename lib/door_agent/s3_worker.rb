@@ -8,7 +8,7 @@ class DoorAgent
 
     def perform(message)
       self.class.bucket.objects[message.filename].write(
-        message.to_jsonp,
+        message.to_json,
         acl: :public_read,
         content_type: 'application/json',
         cache_control: 'must-revalidate, proxy-revalidate'
