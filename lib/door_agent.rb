@@ -7,7 +7,7 @@ class DoorAgent
 
   SERIAL_PROTOCOL = %r{
     ^
-    door:(?<door> \d+)
+    id:(?<id> \d+)
     \s
     state:(?<state> (open|closed))
     $
