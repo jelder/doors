@@ -17,7 +17,7 @@
 }
 
 .status-box.open {
-  border: 5px solid purple;
+  border: 7px solid purple;
   color: purple;
 }
 
@@ -27,14 +27,8 @@
   color: white;
 }
 
-.status-box.coming-soon {
+.status-box.offline {
   color: white;
   border: 5px dashed #ccc;
   background-color: #ddd;
 }
-
-/*
-body {
-  color: #cdbfe3;
-  background-color: #563d7c;
-}*/

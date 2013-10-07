@@ -29,19 +29,18 @@
     <script>
       update_timestamps = function() {
         $(".time").each(function(i){
-          var timestamp = $(this).data("timestamp");
-          $(this).text(" since " + moment(timestamp).fromNow());
+          $(this).text(" since " + moment($(this).data("timestamp")).fromNow());
         });
       }
 
       update = function(door) {
-        var id = door.host + '-' + door.id;
-        var status_box = $('#'+id);
+        var status_box = $('#' + door.host + '-' + door.id);
         status_box.removeClass('open');
         status_box.removeClass('closed');
         status_box.addClass(door.state);
         status_box.find('.state').text(door.state);
         status_box.find('.time').data("timestamp", door.timestamp);
+        status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
         if (door.name) {
           status_box.find('.name').text(door.name);
         }
@@ -49,9 +48,7 @@
 
       create = function(door) {
         var template = $('#status-box-template').clone();
-        var id = door.host + '-' + door.id;
-        template.attr("id", id);
-        template.addClass(door.state);
+        template.attr("id", door.host + '-' + door.id);
         $('#doorlist').append(template);
         $('#doorlist').sort(sort).appendTo('#doorlist'); // Async can be a bitch
         update(door);
