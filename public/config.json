@@ -1,7 +1,7 @@
 {
   "pusher": "cec28eb49dd7904d3bb8",
   "doors": [
-    { "url": "doors/jeldair/3.json", "name": "Gutenberg (Nap Room)" },
+    { "url": "doors/jeldair/3.json", "name": "Gutenberg / Nap Room" },
     { "url": "doors/jeldair/2.json", "name": "½ Bathroom" },
     { "url": "doors/jeldair/1.json", "name": "Full Bathroom" }
   ]
