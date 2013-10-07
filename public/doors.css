@@ -4,18 +4,16 @@
   padding: 0 15px;
 }
 
+#status-box-template { display: none; }
+
 .status-box {
   width: 100%;
-  height: 85px;
+  height: 100px;
   padding: 10px;
   margin: 15px;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
-}
-
-.status-box .name {
-  font-size: 150%;
 }
 
 .status-box.open {

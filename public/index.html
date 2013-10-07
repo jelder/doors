@@ -14,11 +14,11 @@
   <body>
     <div class="container">
       <div id="doorlist"/>
-      <div id="door-1" class="status-box open">
-        <div class="text-center">
-          <span class="name">Gutenberg</span><br/>
-          <span class="state">open</span> for <span class="time" data-timestamp="2013-10-06T18:37:20Z">...</span>
-        </div>
+    </div>
+    <div id="status-box-template" class="status-box">
+      <div class="text-center">
+        <h4><span class="name"></span> is <id class="state"></span></h4>
+        <span class="time"/>
       </div>
     </div>
 
@@ -27,25 +27,51 @@
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
-      create = function(door) {
-        $('#doorlist')
-      };
+      update_timestamps = function() {
+        $(".time").each(function(i){
+          var timestamp = $(this).data("timestamp");
+          $(this).text(" since " + moment(timestamp).fromNow());
+        });
+      }
 
       update = function(door) {
-
+        var id = door.host + '-' + door.id;
+        var status_box = $('#'+id);
+        status_box.removeClass('open');
+        status_box.removeClass('closed');
+        status_box.addClass(door.state);
+        status_box.find('.state').text(door.state);
+        status_box.find('.time').data("timestamp", door.timestamp);
+        if (door.name) {
+          status_box.find('.name').text(door.name);
+        }
       };
 
+      create = function(door) {
+        var template = $('#status-box-template').clone();
+        var id = door.host + '-' + door.id;
+        template.attr("id", id);
+        template.addClass(door.state);
+        $('#doorlist').append(template);
+        $('#doorlist').sort(sort).appendTo('#doorlist'); // Async can be a bitch
+        update(door);
+      };
+
+      function sort(a, b){
+          return ($(b).attr("id")) < ($(a).attr("id")) ? 1 : -1;
+      }
+
       (function(){
-          $(".time").each(function(i){
-            var timestamp = $(this).data("timestamp");
-            $(this).text(moment(timestamp).fromNow(true));
-          });
-          setTimeout(arguments.callee, 1000);
+        update_timestamps();
+        setTimeout(arguments.callee, 1000);
       })();
 
       $.getJSON( "config.json", function( config ) {
-        $.each( config.states, function( i, url ) {
-          $.getJSON( url, create);
+        $.each( config.doors, function( i, door ) {
+          $.getJSON( door.url, function(date) {
+            jQuery.extend(door, date);
+            create(door);
+          });
         });
 
         pusher = new Pusher(config.pusher);
