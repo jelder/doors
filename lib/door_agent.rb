@@ -55,14 +55,14 @@ class DoorAgent
     end
   end
 
-  def demo
+  def demo(delay = 1)
     fake_doors = 3.times.map{ |id| {id: id+1, state:0} }
     states = %w[open closed]
     loop do
       door = fake_doors.sample
       state = states[door[:state] ^= 1]
       handle_message("id:#{door[:id]} state:#{state}")
-      sleep [1,rand(5)].max
+      sleep [1,rand(delay)].max
     end
   end
 
