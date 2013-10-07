@@ -46,30 +46,22 @@ class DoorAgent
 
   def handle_message(string)
     if match = SERIAL_PROTOCOL.match(string.chomp)
-      door = match[:door].to_i
-      message = Message.new(
-        door: door,
+      Message.new(
+        id: match[:id].to_i,
         state: match[:state]
-      )
-
-      if last_change = doors[door]
-        message[:last_change] = last_change
-      end
-      doors[door] = Time.now
-
-      message.announce
+      ).announce
     else
       logger.error "couldn't parse: #{string}"
     end
   end
 
   def demo
-    fake_doors = 3.times.map{ |door| {door: door+1, state:0} }
+    fake_doors = 3.times.map{ |id| {id: id+1, state:0} }
     states = %w[open closed]
     loop do
       door = fake_doors.sample
-      door[:state] ^= 1
-      handle_message("door:#{door[:door]} state:#{states[door[:state]]}")
+      state = states[door[:state] ^= 1]
+      handle_message("id:#{door[:id]} state:#{state}")
       sleep [1,rand(5)].max
     end
   end
