@@ -7,7 +7,7 @@ class DoorAgent
 
   SERIAL_PROTOCOL = %r{
     ^
-    id:(?<id> \d+)
+    sensor:(?<sensor> \d+)
     \s
     state:(?<state> (open|closed))
     $
@@ -47,7 +47,7 @@ class DoorAgent
   def handle_message(string)
     if match = SERIAL_PROTOCOL.match(string.chomp)
       Message.new(
-        id: match[:id].to_i,
+        sensor: match[:sensor].to_i,
         state: match[:state]
       ).announce
     else
@@ -56,12 +56,12 @@ class DoorAgent
   end
 
   def demo(delay = 1)
-    fake_doors = 3.times.map{ |id| {id: id+1, state:0} }
+    fake_doors = 3.times.map{ |sensor| {sensor: sensor+1, state:0} }
     states = %w[open closed]
     loop do
       door = fake_doors.sample
       state = states[door[:state] ^= 1]
-      handle_message("id:#{door[:id]} state:#{state}")
+      handle_message("sensor:#{door[:sensor]} state:#{state}")
       sleep [1,rand(delay)].max
     end
   end

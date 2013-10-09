@@ -27,53 +27,47 @@
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
-      update_timestamps = function() {
-        $(".time").each(function(i){
-          $(this).text(" since " + moment($(this).data("timestamp")).fromNow());
-        });
+      function Door(data) {
+        this.state = data.state;
+        this.timestamp = data.timestamp;
+        this.name = data.name;
+        this.path = 'doors/' + data.host + '/' + data.sensor + '.json';
+        this.label = data.host + '-' + data.sensor;
       }
 
-      update = function(door) {
-        var status_box = $('#' + door.host + '-' + door.id);
+      update = function(data) {
+        var door = new Door(data);
+        status_box = $('#' + door.label);
         status_box.removeClass('open');
         status_box.removeClass('closed');
         status_box.addClass(door.state);
         status_box.find('.state').text(door.state);
         status_box.find('.time').data("timestamp", door.timestamp);
         status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
-        if (door.name) {
-          status_box.find('.name').text(door.name);
-        }
       };
 
-      create = function(door) {
-        var template = $('#status-box-template').clone();
-        template.attr("id", door.host + '-' + door.id);
-        $('#doorlist').append(template);
-        $('#doorlist').sort(sort).appendTo('#doorlist'); // Async can be a bitch
-        update(door);
-      };
-
-      function sort(a, b){
-          return ($(b).attr("id")) < ($(a).attr("id")) ? 1 : -1;
-      }
-
+      // Update relative time presentation once per second.
       (function(){
-        update_timestamps();
+        $(".time").each(function(i){
+          $(this).text(" since " + moment($(this).data("timestamp")).fromNow());
+        });
         setTimeout(arguments.callee, 1000);
       })();
 
       $.getJSON( "config.json", function( config ) {
-        $.each( config.doors, function( i, door ) {
-          $.getJSON( door.url, function(date) {
-            jQuery.extend(door, date);
-            create(door);
+        pusher = new Pusher(config.pusher);
+        $.each( config.doors, function( i, data ) {
+          var door = new Door(data);
+          var template = $('#status-box-template').clone();
+          template.attr("id", door.label);
+          template.find('.name').text(door.name);
+          $('#doorlist').append(template);
+          $.getJSON( door.path, function(door) {
+            update(door);
+            pusher.subscribe('change_events').bind(door.label, update);
           });
         });
 
-        pusher = new Pusher(config.pusher);
-        channel = pusher.subscribe('doors');
-        channel.bind('state_change', update);
       });
 
     </script>

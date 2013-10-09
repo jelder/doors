@@ -13,22 +13,27 @@ class DoorAgent
     end
 
     def filename
-        File.join("doors", host, "#{fetch(:id)}.json")
+        File.join("doors", host, "#{fetch(:sensor)}.json")
     end
 
     def host
       Socket.gethostname.split('.').first
     end
 
+    def label
+      "#{host}-#{fetch(:sensor)}"
+    end
+
     def announce
       merge!(
+        label: label,
         timestamp: Time.now.utc.iso8601,
         host: host
       )
       S3Worker.new.async.perform(self)
       PusherWorker.new.async.perform(self)
       FilesystemWorker.new.async.perform(self)
-      true
+      self
     end
 
   end

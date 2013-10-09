@@ -2,13 +2,12 @@ class DoorAgent
   class PusherWorker
     include SuckerPunch::Job
 
-    CHANNEL = 'doors'
-    EVENT = 'state_change'
+    CHANNEL = 'change_events'
 
     def perform(message)
       @@logger ||= ::Logger.new(STDERR)
-      @@logger.info "Pusher.trigger(#{CHANNEL.inspect}, #{EVENT.inspect}, #{message.inspect})"
-      Pusher.trigger(CHANNEL, EVENT, message)
+      @@logger.info "Pusher.trigger(#{CHANNEL.inspect}, #{message.label}.inspect, #{message.inspect})"
+      Pusher.trigger(CHANNEL, message.label, message)
     end
   end
 end
