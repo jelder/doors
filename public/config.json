@@ -1,7 +1,7 @@
 {
   "pusher": "cec28eb49dd7904d3bb8",
   "doors": [
-    { "host": "jeldair", "sensor": 3, "name": "Gutenberg / Nap Room" },
+    { "host": "jeldair", "sensor": 3, "name": "Gutenberg" },
     { "host": "jeldair", "sensor": 2, "name": "½ Bathroom" },
     { "host": "jeldair", "sensor": 1, "name": "Full Bathroom" }
   ]
