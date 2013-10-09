@@ -1,3 +1,5 @@
+body { background-color: #B23BA7;}
+
 .container {
   width: auto;
   max-width: 500px;
@@ -11,24 +13,27 @@
   height: 100px;
   padding: 10px;
   margin: 15px;
+  border: 3px solid white;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
 }
 
 .status-box.open {
-  border: 7px solid purple;
-  color: purple;
+  color: white;
 }
 
 .status-box.closed {
-  border: 5px solid purple;
-  background-color: purple;
-  color: white;
+  background-color: white;
+  color: #B23BA7;
 }
 
 .status-box.offline {
-  color: white;
+  color: #B23BA7;
   border: 5px dashed #ccc;
   background-color: #ddd;
+}
+
+.status-box .time {
+  font-weight: 200;
 }
