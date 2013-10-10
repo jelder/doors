@@ -6,7 +6,7 @@ class DoorAgent
 
     def perform(message)
       @@logger ||= ::Logger.new(STDERR)
-      @@logger.info "Pusher.trigger(#{CHANNEL.inspect}, #{message.label}.inspect, #{message.inspect})"
+      @@logger.info "Pusher.trigger(#{CHANNEL.inspect}, #{message.label.inspect}, #{message.inspect})"
       Pusher.trigger(CHANNEL, message.label, message)
     end
   end
