@@ -1,8 +1,10 @@
 {
   "pusher": "cec28eb49dd7904d3bb8",
   "doors": [
-    { "host": "jeldair", "sensor": 3, "name": "Gutenberg" },
-    { "host": "jeldair", "sensor": 2, "name": "½ Bathroom" },
-    { "host": "jeldair", "sensor": 1, "name": "Full Bathroom" }
+    { "host": "jeldermbp", "sensor": 1, "name": "½ Bathroom" },
+    { "host": "jeldermbp", "sensor": 2, "name": "Full Bathroom" },
+    { "host": "jeldermbp", "sensor": 3, "name": "Gutenberg" },
+    { "name": "Plato" },
+    { "name": "Galileo" }
   ]
 }

@@ -19,21 +19,42 @@ body { background-color: #B23BA7;}
   border-radius: 15px;
 }
 
-.status-box.open {
-  color: white;
-}
-
-.status-box.closed {
-  background-color: white;
-  color: #B23BA7;
-}
-
-.status-box.offline {
-  color: #B23BA7;
-  border: 5px dashed #ccc;
-  background-color: #ddd;
+.status-box .name {
+  padding-top: 15px;
+  font-weight: 500;
+  font-size: 17pt;
 }
 
 .status-box .time {
   font-weight: 200;
+}
+
+/* Door is open */
+.status-box.open {
+  color: white;
+}
+.status-box.open .name:after {
+  content: " door is open" ;
+}
+
+/* Door is closed */
+.status-box.closed {
+  background-color: white;
+  color: #B23BA7;
+}
+.status-box.closed .name:after {
+  content: " door is closed" ;
+}
+
+/* Door is in an unknown state */
+.status-box.offline {
+  color: white;
+  border: 3px dashed white;
+  background-color: #B23BA7;
+}
+.status-box.offline .name:after {
+  content: " is offline" ;
+}
+.status-box.offline .time {
+  display: none;
 }

@@ -10,10 +10,10 @@
     <div class="container">
       <div id="doorlist"/>
     </div>
-    <div id="status-box-template" class="status-box">
+    <div id="status-box-template" class="status-box offline">
       <div class="text-center">
-        <h4><span class="name"></span> is <id class="state"></span></h4>
-        <span class="time"/>
+        <div class="name"></div>
+        <span class="time">
       </div>
     </div>
 
@@ -25,6 +25,8 @@
         this.state = data.state;
         this.timestamp = data.timestamp;
         this.name = data.name;
+        this.host = data.host;
+        this.sensor = data.sensor;
         this.path = 'doors/' + data.host + '/' + data.sensor + '.json';
         this.label = data.host + '-' + data.sensor;
       }
@@ -32,13 +34,38 @@
       update = function(data) {
         var door = new Door(data);
         status_box = $('#' + door.label);
-        status_box.removeClass('open');
-        status_box.removeClass('closed');
-        status_box.addClass(door.state);
-        status_box.find('.state').text(door.state);
-        status_box.find('.time').data("timestamp", door.timestamp);
-        status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
+        if (typeof door.state === "undefined") {
+          status_box.removeClass('open closed').addClass('offline');
+          status_box.find('.state').text('offline');
+        } else {
+          status_box.removeClass('open closed offline').addClass(door.state);
+          status_box.find('.state').text(door.state);
+          status_box.find('.time').data("timestamp", door.timestamp);
+          status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
+        }
       };
+
+      /* Load config, populate DOM and subscribe to Pusher events */
+      $.getJSON( "config.json", function( config ) {
+        pusher = new Pusher(config.pusher);
+        $.each( config.doors, function( i, data ) {
+          var door = new Door(data);
+          if (typeof door.sensor === "undefined") {
+            door.label = 'offline-' + i;
+          }
+          var template = $('#status-box-template').clone();
+          template.attr("id", door.label);
+          template.find('.name').text(door.name);
+          $('#doorlist').append(template);
+          $.getJSON( door.path, function(data) {
+            update(data);
+            pusher.subscribe('change_events').bind(door.label, update);
+          }).fail( function() {
+            update(door);
+          });
+        });
+
+      });
 
       // Update relative time presentation once per second.
       (function(){
@@ -48,21 +75,6 @@
         setTimeout(arguments.callee, 1000);
       })();
 
-      $.getJSON( "config.json", function( config ) {
-        pusher = new Pusher(config.pusher);
-        $.each( config.doors, function( i, data ) {
-          var door = new Door(data);
-          var template = $('#status-box-template').clone();
-          template.attr("id", door.label);
-          template.find('.name').text(door.name);
-          $('#doorlist').append(template);
-          $.getJSON( door.path, function(door) {
-            update(door);
-            pusher.subscribe('change_events').bind(door.label, update);
-          });
-        });
-
-      });
 
     </script>
   </body>
