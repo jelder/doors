@@ -21,6 +21,18 @@
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
+      if (window.webkitNotifications.checkPermission() != 0) {
+        window.webkitNotifications.requestPermission();
+      }
+      var icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEWyO6cVoM7XAAAADElEQVQIHWNgGNwAAACgAAEiIwmzAAAAAElFTkSuQmCC";
+      var notify = function(icon,heading,body) {
+        var notification = window.webkitNotifications.createNotification(icon,heading,body);
+        notification.onclick = function () {
+          notification.close();
+        }
+        notification.show();
+      }
+
       function Door(data) {
         this.state = data.state;
         this.timestamp = data.timestamp;
@@ -31,7 +43,7 @@
         this.label = data.host + '-' + data.sensor;
       }
 
-      update = function(data) {
+      var update = function(data,skip_notify) {
         var door = new Door(data);
         status_box = $('#' + door.label);
         if (typeof door.state === "undefined") {
@@ -42,6 +54,17 @@
           status_box.find('.state').text(door.state);
           status_box.find('.time').data("timestamp", door.timestamp);
           status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
+        }
+        if (!skip_notify && door.state) {
+          switch (door.state) {
+            case "open":
+              message = "just opened!";
+              break;
+            case "closed":
+              message = "just closed :(";
+              break;
+          }
+          notify(icon, status_box.find('.name').text(), message);
         }
       };
 
@@ -58,7 +81,7 @@
           template.find('.name').text(door.name);
           $('#doorlist').append(template);
           $.getJSON( door.path, function(data) {
-            update(data);
+            update(data,true);
             pusher.subscribe('change_events').bind(door.label, update);
           }).fail( function() {
             update(door);
@@ -74,7 +97,6 @@
         });
         setTimeout(arguments.callee, 1000);
       })();
-
 
     </script>
   </body>
