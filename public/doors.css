@@ -1,5 +1,3 @@
-body { background-color: #B23BA7;}
-
 .container {
   width: auto;
   max-width: 500px;
@@ -8,7 +6,31 @@ body { background-color: #B23BA7;}
 
 #status-box-template { display: none; }
 
-.status-box {
+.status-box.1564f9 {
+  background-color: #1564f9;
+}
+
+.status-box.3fc41b {
+  background-color: #3fc41b;
+}
+
+.status-box.fa8e1f {
+  background-color: #fa8e1f;
+}
+
+.status-box.4ca8ea {
+  background-color: #4ca8ea;
+}
+
+.status-box.f71347 {
+  background-color: #f71347;
+}
+
+.status-box.fcc124 {
+  background-color: #fcc124;
+}
+
+.status-box-outline {
   width: 100%;
   height: 100px;
   padding: 10px;
@@ -30,31 +52,31 @@ body { background-color: #B23BA7;}
 }
 
 /* Door is open */
-.status-box.open {
+.status-box .open {
   color: white;
 }
-.status-box.open .name:after {
+.status-box .open .name:after {
   content: " door is open" ;
 }
 
 /* Door is closed */
-.status-box.closed {
+.status-box .closed {
   background-color: white;
   color: #B23BA7;
 }
-.status-box.closed .name:after {
+.status-box .closed .name:after {
   content: " door is closed" ;
 }
 
 /* Door is in an unknown state */
-.status-box.offline {
+.status-box .offline {
   color: white;
   border: 3px dashed white;
   background-color: #B23BA7;
 }
-.status-box.offline .name:after {
+.status-box .offline .name:after {
   content: " is offline" ;
 }
-.status-box.offline .time {
+.status-box .offline .time {
   display: none;
 }
