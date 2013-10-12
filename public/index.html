@@ -4,17 +4,19 @@
     <title>Doors</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
     <link rel="stylesheet" href="doors.css">
   </head>
   <body>
     <div class="container">
-      <div id="doorlist"/>
+      <div id='doorlist'/>
     </div>
-    <div id="status-box-template" class="status-box offline">
-      <div class"status-box-outline">
+    <div id="status-box-template" class='offline'>
+      <div class="outline">
         <div class="text-center">
           <div class="name"></div>
-          <span class="time">
+          <span class="time"></span>
         </div>
       </div>
     </div>
@@ -37,15 +39,14 @@
         var door = new Door(data);
         status_box = $('#' + door.label);
         if (typeof door.state === "undefined") {
-          status_box.removeClass('open closed').addClass('offline');
-          status_box.find('.state').text('offline');
+          status_box.addClass('offline');
         } else {
           status_box.removeClass('open closed offline').addClass(door.state);
           status_box.find('.state').text(door.state);
           status_box.find('.time').data("timestamp", door.timestamp);
           status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
         }
-        if (!skip_notify && door.state) {
+        if (!skip_notify && door.state && !(typeof notify === "undefined")) {
           switch (door.state) {
             case "open":
               message = "just opened!";
@@ -67,20 +68,17 @@
             door.label = 'offline-' + i;
           }
           var template = $('#status-box-template').clone();
-          var color =  colors[i % colors.length]
-          template.addClass(color)
-          template.data("icon", 'icon_' + color + '.png');
-          template.attr("id", door.label);
+          template.addClass("status-box");
           template.find('.name').text(door.name);
+          template.attr("id", door.label);
           $('#doorlist').append(template);
           $.getJSON( door.path, function(data) {
             update(data,true);
             pusher.subscribe('change_events').bind(door.label, update);
           }).fail( function() {
-            update(door);
+            update(door,true);
           });
         });
-
       });
 
       // Update relative time presentation once per second.
@@ -91,32 +89,35 @@
         setTimeout(arguments.callee, 1000);
       })();
 
-      // Generate a set of icons for notifications from our color palette.
-      var color_data = {
-        "1564f9": "UVZPl4Z7ha",
-        "3fc41b": "U/xButvkTR",
-        "4ca8ea": "VMqOr4+3T5",
-        "f71347": "X3E0eeps0u",
-        "fa8e1f": "X6jh83IXPs",
-        "fcc124": "X8wST1RrWw"
-      };
-      var colors = [], icons = [];
-      $.each(color_data, function(key, value){
-        colors.push(key);
-        icons[key] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAAAA1BMVE"+value+"AAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC"
-      });
+      if (window.hasOwnProperty('webkitNotifications')) {
+        console.log("Notifications are possible.");
 
-      if (window.webkitNotifications.checkPermission() != 0) {
-        window.webkitNotifications.requestPermission();
-      }
-      var notify = function(icon,heading,body) {
-        var notification = window.webkitNotifications.createNotification(icon,heading,body);
-        notification.onclick = function () {
-          notification.close();
+        // Generate a set of icons for notifications from our color palette.
+        var color_data = {
+          "1564f9": "UVZPl4Z7ha",
+          "3fc41b": "U/xButvkTR",
+          "4ca8ea": "VMqOr4+3T5",
+          "f71347": "X3E0eeps0u",
+          "fa8e1f": "X6jh83IXPs",
+          "fcc124": "X8wST1RrWw"
+        };
+        $.each(color_data, function(color, magic){
+          icons[color] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAAAA1BMVE"+magic+"AAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC"
+        });
+
+        if (window.webkitNotifications.checkPermission() != 0) {
+          console.log("Requesting permission for notifications.")
+          window.webkitNotifications.requestPermission();
         }
-        notification.show();
-      }
 
+        var notify = function(icon,heading,body) {
+          var notification = window.webkitNotifications.createNotification(icon,heading,body);
+          notification.onclick = function () {
+            notification.close();
+          }
+          notification.show();
+        }
+      }
 
     </script>
   </body>

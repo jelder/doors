@@ -1,3 +1,5 @@
+body { background-color: #515151;}
+
 .container {
   width: auto;
   max-width: 500px;
@@ -6,77 +8,77 @@
 
 #status-box-template { display: none; }
 
-.status-box.1564f9 {
-  background-color: #1564f9;
+.status-box {
+  height: 120px;
+  padding: 10px;
+  overflow: hidden;
+  max-width: 500px;
 }
 
-.status-box.3fc41b {
-  background-color: #3fc41b;
-}
+.status-box:nth-of-type(6n+1) { height: 100%; background-color: #1564f9; }
+.status-box:nth-of-type(6n+2) { height: 100%; background-color: #3fc41b; }
+.status-box:nth-of-type(6n+3) { height: 100%; background-color: #fa8e1f; }
+.status-box:nth-of-type(6n+4) { height: 100%; background-color: #4ca8ea; }
+.status-box:nth-of-type(6n+5) { height: 100%; background-color: #f71347; }
+.status-box:nth-of-type(6n+6) { height: 100%; background-color: #fcc124; }
 
-.status-box.fa8e1f {
-  background-color: #fa8e1f;
-}
+.status-box:nth-of-type(6n+1).closed { height: 100%; color: #1564f9; }
+.status-box:nth-of-type(6n+2).closed { height: 100%; color: #3fc41b; }
+.status-box:nth-of-type(6n+3).closed { height: 100%; color: #fa8e1f; }
+.status-box:nth-of-type(6n+4).closed { height: 100%; color: #4ca8ea; }
+.status-box:nth-of-type(6n+5).closed { height: 100%; color: #f71347; }
+.status-box:nth-of-type(6n+6).closed { height: 100%; color: #fcc124; }
 
-.status-box.4ca8ea {
-  background-color: #4ca8ea;
-}
-
-.status-box.f71347 {
-  background-color: #f71347;
-}
-
-.status-box.fcc124 {
-  background-color: #fcc124;
-}
-
-.status-box-outline {
-  width: 100%;
+.outline {
   height: 100px;
   padding: 10px;
-  margin-top: 15px;
-  border: 3px solid white;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
 }
 
-.status-box .name {
+.name {
   padding-top: 15px;
   font-weight: 500;
   font-size: 17pt;
 }
 
-.status-box .time {
+.time {
   font-weight: 200;
 }
 
 /* Door is open */
-.status-box .open {
+.open {
   color: white;
+  background-color: transparent;
 }
-.status-box .open .name:after {
+.open .name:after {
   content: " door is open" ;
+}
+.open .outline {
+  border: 5px solid white;
 }
 
 /* Door is closed */
-.status-box .closed {
-  background-color: white;
-  color: #B23BA7;
-}
-.status-box .closed .name:after {
+.closed .name:after {
   content: " door is closed" ;
+}
+.closed .outline {
+  background-color: white;
+  border: 3px solid white;
 }
 
 /* Door is in an unknown state */
-.status-box .offline {
+.offline {
   color: white;
-  border: 3px dashed white;
-  background-color: #B23BA7;
+  background-color: transparent;
 }
-.status-box .offline .name:after {
+.offline .name:after {
   content: " is offline" ;
 }
-.status-box .offline .time {
+.offline .time {
   display: none;
+}
+.offline .outline {
+  border: 3px dashed white;
 }
