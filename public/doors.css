@@ -22,12 +22,12 @@ body { background-color: #515151;}
 .status-box:nth-of-type(6n+5) { height: 100%; background-color: #f71347; }
 .status-box:nth-of-type(6n+6) { height: 100%; background-color: #fcc124; }
 
-.status-box:nth-of-type(6n+1).closed { height: 100%; color: #1564f9; }
-.status-box:nth-of-type(6n+2).closed { height: 100%; color: #3fc41b; }
-.status-box:nth-of-type(6n+3).closed { height: 100%; color: #fa8e1f; }
-.status-box:nth-of-type(6n+4).closed { height: 100%; color: #4ca8ea; }
-.status-box:nth-of-type(6n+5).closed { height: 100%; color: #f71347; }
-.status-box:nth-of-type(6n+6).closed { height: 100%; color: #fcc124; }
+.status-box:nth-of-type(6n+1).closed { color: #1564f9; }
+.status-box:nth-of-type(6n+2).closed { color: #3fc41b; }
+.status-box:nth-of-type(6n+3).closed { color: #fa8e1f; }
+.status-box:nth-of-type(6n+4).closed { color: #4ca8ea; }
+.status-box:nth-of-type(6n+5).closed { color: #f71347; }
+.status-box:nth-of-type(6n+6).closed { color: #fcc124; }
 
 .outline {
   height: 100px;
@@ -50,7 +50,6 @@ body { background-color: #515151;}
 /* Door is open */
 .open {
   color: white;
-  background-color: transparent;
 }
 .open .name:after {
   content: " door is open" ;
