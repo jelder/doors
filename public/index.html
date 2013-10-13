@@ -11,7 +11,7 @@
     <div id="template" class="row">
       <span class="status-box offline">
         <div class="frame">
-          <span class="notify-pref hidden-xs glyphicon glyphicon-star-empty"></span>
+          <span class="notify-pref hidden-xs glyphicon glyphicon-heart-empty"></span>
           <div class="text-center">
             <div class="name"></div>
             <span class="time"/>
@@ -25,6 +25,14 @@
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
+      if (window.hasOwnProperty('webkitNotifications')) {
+        console.log("Notifications are possible.");
+        if (window.webkitNotifications.checkPermission() != 0) {
+          console.log("Requesting permission for notifications.")
+          window.webkitNotifications.requestPermission();
+        }
+      }
+
       function Door(data) {
         this.state = data.state;
         this.timestamp = data.timestamp;
@@ -49,12 +57,29 @@
         if (!skip_notify) { notify(door) }
       };
 
-      if (window.hasOwnProperty('webkitNotifications')) {
-        console.log("Notifications are possible.");
-        if (window.webkitNotifications.checkPermission() != 0) {
-          console.log("Requesting permission for notifications.")
-          window.webkitNotifications.requestPermission();
+      var create = function(data,i) {
+        var door = new Door(data);
+        if (typeof door.sensor === "undefined") {
+          door.label = 'offline-' + i;
         }
+        var template = $('#template').clone();
+        template.find('.name').text(door.name);
+        template.attr("id", door.label);
+        var color = colors[i % colors.length];
+        template.data('icon', icons[color]);
+        template.find('.notify-pref').click(function() {
+          $(this).toggleClass("glyphicon-heart-empty")
+          $(this).toggleClass("glyphicon-heart")
+        });
+        $('#doorlist').append(template);
+
+        $.getJSON( door.path, function(data) {
+          update(data,true);
+          pusher.subscribe('change_events').bind(door.label, update);
+        }).fail( function() {
+          update(door,true);
+        });
+
       }
 
       var notify = function(door) {
@@ -100,26 +125,7 @@
       $.getJSON( "config.json", function( config ) {
         pusher = new Pusher(config.pusher);
         $.each( config.doors, function( i, data ) {
-          var door = new Door(data);
-          if (typeof door.sensor === "undefined") {
-            door.label = 'offline-' + i;
-          }
-          var template = $('#template').clone();
-          template.find('.name').text(door.name);
-          template.attr("id", door.label);
-          var color = colors[i % colors.length];
-          template.data('icon', icons[color]);
-          template.find('.notify-pref').click(function() {
-            $(this).toggleClass("glyphicon-star-empty")
-            $(this).toggleClass("glyphicon-star")
-          });
-          $('#doorlist').append(template);
-          $.getJSON( door.path, function(data) {
-            update(data,true);
-            pusher.subscribe('change_events').bind(door.label, update);
-          }).fail( function() {
-            update(door,true);
-          });
+          create(data,i);
         });
       });
 

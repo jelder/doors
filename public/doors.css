@@ -4,6 +4,8 @@ body {
 
 .container { margin: 0px; max-width: 100% }
 
+.row { padding-left: 20px ; padding-right: 20px;}
+
 #template { display: none; }
 
 .status-box {
@@ -11,6 +13,7 @@ body {
   padding: 15px;
 }
 
+/* Apple Passport color scheme */
 .row:nth-of-type(6n+1) { background-color: #1564f9; }
 .row:nth-of-type(6n+2) { background-color: #3fc41b; }
 .row:nth-of-type(6n+3) { background-color: #fa8e1f; }
@@ -25,6 +28,17 @@ body {
 .row:nth-of-type(6n+5) .status-box.closed { color: #f71347; }
 .row:nth-of-type(6n+6) .status-box.closed { color: #fcc124; }
 
+/* Boundless logo color scheme */
+/*
+.row:nth-of-type(3n+1) { background-color: #58A211; }
+.row:nth-of-type(3n+2) { background-color: #1281A0; }
+.row:nth-of-type(3n+3) { background-color: #F9B600; }
+
+.row:nth-of-type(3n+1) .status-box.closed { color: #58A211; }
+.row:nth-of-type(3n+2) .status-box.closed { color: #1281A0; }
+.row:nth-of-type(3n+3) .status-box.closed { color: #F9B600; }
+*/
+
 .frame {
   margin: auto;
   max-width: 500px;
@@ -33,6 +47,19 @@ body {
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
+}
+
+.notify-pref {
+  padding: 10px 0px 0px 30px;
+  height: 40px;
+  width: 40px;
+  float: left;
+  font-size: 40px;
+  cursor: pointer;
+  font-weight: 100;
+}
+.glyphicon-heart {
+  text-shadow: 0 0 10px;
 }
 
 .name {
@@ -70,6 +97,9 @@ body {
   color: white;
   background-color: transparent;
 }
+.offline .name {
+  font-weight: 300;
+}
 .offline .name:after {
   content: " door coming soon" ;
 }
@@ -78,19 +108,5 @@ body {
 }
 .offline .frame {
   border: 3px dashed white;
-}
-
-.notify-pref {
-  padding: 10px 0px 0px 30px;
-  height: 40px;
-  width: 40px;
-  float: left;
-  font-size: 40px;
-  cursor: pointer;
-  font-weight: 100;
-}
-.notify-enable {
-  /*color: white;*/
-  text-shadow: 0 0 20px;
 }
 .offline .notify-pref { display: none !important;}
