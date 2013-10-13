@@ -5,6 +5,7 @@
     { "host": "jeldermbp", "sensor": 2, "name": "Full Bathroom" },
     { "host": "jeldermbp", "sensor": 3, "name": "Gutenberg" },
     { "name": "Plato" },
-    { "name": "Galileo" }
+    { "name": "Galileo" },
+    { "name": "Catacombs" }
   ]
 }

@@ -4,20 +4,21 @@
     <title>Doors</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
 
     <link rel="stylesheet" href="doors.css">
   </head>
   <body>
-    <div class='container'>
-      <div id='doorlist'></div>
-    </div>
-    <div id="status-box-template" class='offline'>
-      <div class="outline">
-        <div class="text-center">
-          <div class="name"></div>
-          <span class="time"/>
+    <div id='doorlist'></div>
+    <div id="template" class="row">
+      <div class="status-box offline">
+        <div class="frame">
+          <div class="text-center">
+            <div class="name"></div>
+            <span class="time"/>
+          </div>
         </div>
       </div>
     </div>
@@ -38,14 +39,15 @@
 
       var update = function(data,skip_notify) {
         var door = new Door(data);
-        status_box = $('#' + door.label);
+        row = $('#' + door.label);
+        console.log(row);
         if (typeof door.state === "undefined") {
-          status_box.addClass('offline');
+          row.find('.status-box').addClass('offline');
         } else {
-          status_box.removeClass('open closed offline').addClass(door.state);
-          status_box.find('.state').text(door.state);
-          status_box.find('.time').data("timestamp", door.timestamp);
-          status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
+          row.find('.status-box').removeClass('open closed offline').addClass(door.state);
+          row.find('.state').text(door.state);
+          row.find('.time').data("timestamp", door.timestamp);
+          row.find('.time').text(" since " + moment(door.timestamp).fromNow());
         }
         if (!skip_notify && door.state) {
           switch (door.state) {
@@ -56,7 +58,7 @@
               message = "just closed :(";
               break;
           }
-          notify(status_box.data('icon'), status_box.find('.name').text(), message);
+          notify(row.data('icon'), status_box.find('.name').text(), message);
         }
       };
 
@@ -79,12 +81,12 @@
       // Generate a set of icons for notifications from our color palette.
       // Order must match .status-box:nth-of-type() declarations.
       var color_data = {
-        "1564f9": "UVZPl4Z7ha",
-        "3fc41b": "U/xButvkTR",
-        "4ca8ea": "VMqOr4+3T5",
-        "f71347": "X3E0eeps0u",
-        "fa8e1f": "X6jh83IXPs",
-        "fcc124": "X8wST1RrWw"
+        "#1564f9": "UVZPl4Z7ha",
+        "#3fc41b": "U/xButvkTR",
+        "#fa8e1f": "X6jh83IXPs",
+        "#4ca8ea": "VMqOr4+3T5",
+        "#f71347": "X3E0eeps0u",
+        "#fcc124": "X8wST1RrWw"
       };
       var icons = [];
       var colors = [];
@@ -101,8 +103,7 @@
           if (typeof door.sensor === "undefined") {
             door.label = 'offline-' + i;
           }
-          var template = $('#status-box-template').clone();
-          template.addClass("status-box");
+          var template = $('#template').clone();
           template.find('.name').text(door.name);
           template.attr("id", door.label);
           var color = colors[i % colors.length];
