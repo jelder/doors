@@ -68,8 +68,9 @@
         var color = colors[i % colors.length];
         template.data('icon', icons[color]);
         template.find('.notify-pref').click(function() {
-          $(this).toggleClass("glyphicon-heart-empty")
-          $(this).toggleClass("glyphicon-heart")
+          $(this).toggleClass("notify-enable");
+          $(this).toggleClass("glyphicon-heart-empty");
+          $(this).toggleClass("glyphicon-heart");
         });
         $('#doorlist').append(template);
 
@@ -92,10 +93,12 @@
             var message = "just closed :(";
             break;
         }
-        var row = $('#' + door.label);
+        if (row.find('.notify-enable').length == 1) {
 
-        if (row.find('.notify-enable') != []) {
-          var notification = window.webkitNotifications.createNotification(row.data('icon'),door.name,message);
+          var notification = window.webkitNotifications.createNotification(
+            row.data('icon'),row.find('.name').text(),
+            message
+          );
 
           notification.onclick = function () {
             notification.close();
