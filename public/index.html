@@ -4,23 +4,21 @@
     <title>Doors</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
-
     <link rel="stylesheet" href="doors.css">
   </head>
   <body>
-    <div id='doorlist'></div>
+    <div id="doorlist" class="container"></div>
     <div id="template" class="row">
-      <div class="status-box offline">
+      <span class="status-box offline">
         <div class="frame">
+          <span class="notify-pref hidden-xs glyphicon glyphicon-star-empty"></span>
           <div class="text-center">
             <div class="name"></div>
             <span class="time"/>
           </div>
         </div>
-      </div>
+      </span>
+
     </div>
 
     <script src="//code.jquery.com/jquery.js"></script>
@@ -40,7 +38,6 @@
       var update = function(data,skip_notify) {
         var door = new Door(data);
         row = $('#' + door.label);
-        console.log(row);
         if (typeof door.state === "undefined") {
           row.find('.status-box').addClass('offline');
         } else {
@@ -49,17 +46,7 @@
           row.find('.time').data("timestamp", door.timestamp);
           row.find('.time').text(" since " + moment(door.timestamp).fromNow());
         }
-        if (!skip_notify && door.state) {
-          switch (door.state) {
-            case "open":
-              message = "just opened!";
-              break;
-            case "closed":
-              message = "just closed :(";
-              break;
-          }
-          notify(row.data('icon'), status_box.find('.name').text(), message);
-        }
+        if (!skip_notify) { notify(door) }
       };
 
       if (window.hasOwnProperty('webkitNotifications')) {
@@ -70,12 +57,26 @@
         }
       }
 
-      var notify = function(icon,heading,body) {
-        var notification = window.webkitNotifications.createNotification(icon,heading,body);
-        notification.onclick = function () {
-          notification.close();
+      var notify = function(door) {
+        if (typeof door.state === "undefined") { return }
+        switch (door.state) {
+          case "open":
+            var message = "just opened!";
+            break;
+          case "closed":
+            var message = "just closed :(";
+            break;
         }
-        notification.show();
+        var row = $('#' + door.label);
+
+        if (row.find('.notify-enable') != []) {
+          var notification = window.webkitNotifications.createNotification(row.data('icon'),door.name,message);
+
+          notification.onclick = function () {
+            notification.close();
+          }
+          notification.show();
+        }
       }
 
       // Generate a set of icons for notifications from our color palette.
@@ -108,6 +109,10 @@
           template.attr("id", door.label);
           var color = colors[i % colors.length];
           template.data('icon', icons[color]);
+          template.find('.notify-pref').click(function() {
+            $(this).toggleClass("glyphicon-star-empty")
+            $(this).toggleClass("glyphicon-star")
+          });
           $('#doorlist').append(template);
           $.getJSON( door.path, function(data) {
             update(data,true);

@@ -1,4 +1,8 @@
-body { background-color: #515151;}
+body {
+  background-color: #515151;
+}
+
+.container { margin: 0px; max-width: 100% }
 
 #template { display: none; }
 
@@ -67,7 +71,7 @@ body { background-color: #515151;}
   background-color: transparent;
 }
 .offline .name:after {
-  content: " door is offline" ;
+  content: " door coming soon" ;
 }
 .offline .time {
   display: none;
@@ -75,3 +79,18 @@ body { background-color: #515151;}
 .offline .frame {
   border: 3px dashed white;
 }
+
+.notify-pref {
+  padding: 10px 0px 0px 30px;
+  height: 40px;
+  width: 40px;
+  float: left;
+  font-size: 40px;
+  cursor: pointer;
+  font-weight: 100;
+}
+.notify-enable {
+  /*color: white;*/
+  text-shadow: 0 0 20px;
+}
+.offline .notify-pref { display: none !important;}
