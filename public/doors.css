@@ -1,60 +1,112 @@
-body { background-color: #B23BA7;}
-
-.container {
-  width: auto;
-  max-width: 500px;
-  padding: 0 15px;
+body {
+  background-color: #515151;
 }
 
-#status-box-template { display: none; }
+.container { margin: 0px; max-width: 100% }
+
+.row { padding-left: 20px ; padding-right: 20px;}
+
+#template { display: none; }
 
 .status-box {
-  width: 100%;
+  height: 130px;
+  padding: 15px;
+}
+
+/* Apple Passport color scheme */
+.row:nth-of-type(6n+1) { background-color: #1564f9; }
+.row:nth-of-type(6n+2) { background-color: #3fc41b; }
+.row:nth-of-type(6n+3) { background-color: #fa8e1f; }
+.row:nth-of-type(6n+4) { background-color: #4ca8ea; }
+.row:nth-of-type(6n+5) { background-color: #f71347; }
+.row:nth-of-type(6n+6) { background-color: #fcc124; }
+
+.row:nth-of-type(6n+1) .status-box.closed { color: #1564f9; }
+.row:nth-of-type(6n+2) .status-box.closed { color: #3fc41b; }
+.row:nth-of-type(6n+3) .status-box.closed { color: #fa8e1f; }
+.row:nth-of-type(6n+4) .status-box.closed { color: #4ca8ea; }
+.row:nth-of-type(6n+5) .status-box.closed { color: #f71347; }
+.row:nth-of-type(6n+6) .status-box.closed { color: #fcc124; }
+
+/* Boundless logo color scheme */
+/*
+.row:nth-of-type(3n+1) { background-color: #58A211; }
+.row:nth-of-type(3n+2) { background-color: #1281A0; }
+.row:nth-of-type(3n+3) { background-color: #F9B600; }
+
+.row:nth-of-type(3n+1) .status-box.closed { color: #58A211; }
+.row:nth-of-type(3n+2) .status-box.closed { color: #1281A0; }
+.row:nth-of-type(3n+3) .status-box.closed { color: #F9B600; }
+*/
+
+.frame {
+  margin: auto;
+  max-width: 500px;
   height: 100px;
   padding: 10px;
-  margin-top: 15px;
-  border: 3px solid white;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   border-radius: 15px;
 }
 
-.status-box .name {
+.notify-pref {
+  padding: 10px 0px 0px 30px;
+  height: 40px;
+  width: 40px;
+  float: left;
+  font-size: 40px;
+  cursor: pointer;
+  font-weight: 100;
+}
+.glyphicon-heart {
+  text-shadow: 0 0 10px;
+}
+
+.name {
   padding-top: 15px;
   font-weight: 500;
   font-size: 17pt;
 }
 
-.status-box .time {
+.time {
   font-weight: 200;
 }
 
 /* Door is open */
-.status-box.open {
+.open {
   color: white;
 }
-.status-box.open .name:after {
+.open .name:after {
   content: " door is open" ;
+}
+.open .frame {
+  border: 3px solid white;
 }
 
 /* Door is closed */
-.status-box.closed {
-  background-color: white;
-  color: #B23BA7;
-}
-.status-box.closed .name:after {
+.closed .name:after {
   content: " door is closed" ;
+}
+.closed .frame {
+  background-color: white;
+  border: 3px solid white;
 }
 
 /* Door is in an unknown state */
-.status-box.offline {
+.offline {
   color: white;
-  border: 3px dashed white;
-  background-color: #B23BA7;
+  background-color: transparent;
 }
-.status-box.offline .name:after {
-  content: " is offline" ;
+.offline .name {
+  font-weight: 300;
 }
-.status-box.offline .time {
+.offline .name:after {
+  content: " door coming soon" ;
+}
+.offline .time {
   display: none;
 }
+.offline .frame {
+  border: 3px dashed white;
+}
+.offline .notify-pref { display: none !important;}

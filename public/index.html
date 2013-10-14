@@ -7,30 +7,30 @@
     <link rel="stylesheet" href="doors.css">
   </head>
   <body>
-    <div class="container">
-      <div id="doorlist"/>
-    </div>
-    <div id="status-box-template" class="status-box offline">
-      <div class="text-center">
-        <div class="name"></div>
-        <span class="time">
-      </div>
+    <div id="doorlist" class="container"></div>
+    <div id="template" class="row">
+      <span class="status-box offline">
+        <div class="frame">
+          <span class="notify-pref hidden-xs glyphicon glyphicon-heart-empty"></span>
+          <div class="text-center">
+            <div class="name"></div>
+            <span class="time"/>
+          </div>
+        </div>
+      </span>
+
     </div>
 
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
     <script src="moment.min.js" type="text/javascript"></script>
     <script>
-      if (window.webkitNotifications.checkPermission() != 0) {
-        window.webkitNotifications.requestPermission();
-      }
-      var icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEWyO6cVoM7XAAAADElEQVQIHWNgGNwAAACgAAEiIwmzAAAAAElFTkSuQmCC";
-      var notify = function(icon,heading,body) {
-        var notification = window.webkitNotifications.createNotification(icon,heading,body);
-        notification.onclick = function () {
-          notification.close();
+      if (window.hasOwnProperty('webkitNotifications')) {
+        console.log("Notifications are possible.");
+        if (window.webkitNotifications.checkPermission() != 0) {
+          console.log("Requesting permission for notifications.")
+          window.webkitNotifications.requestPermission();
         }
-        notification.show();
       }
 
       function Door(data) {
@@ -45,49 +45,91 @@
 
       var update = function(data,skip_notify) {
         var door = new Door(data);
-        status_box = $('#' + door.label);
+        row = $('#' + door.label);
         if (typeof door.state === "undefined") {
-          status_box.removeClass('open closed').addClass('offline');
-          status_box.find('.state').text('offline');
+          row.find('.status-box').addClass('offline');
         } else {
-          status_box.removeClass('open closed offline').addClass(door.state);
-          status_box.find('.state').text(door.state);
-          status_box.find('.time').data("timestamp", door.timestamp);
-          status_box.find('.time').text(" since " + moment(door.timestamp).fromNow());
+          row.find('.status-box').removeClass('open closed offline').addClass(door.state);
+          row.find('.state').text(door.state);
+          row.find('.time').data("timestamp", door.timestamp);
+          row.find('.time').text(" since " + moment(door.timestamp).fromNow());
         }
-        if (!skip_notify && door.state) {
-          switch (door.state) {
-            case "open":
-              message = "just opened!";
-              break;
-            case "closed":
-              message = "just closed :(";
-              break;
-          }
-          notify(icon, status_box.find('.name').text(), message);
-        }
+        if (!skip_notify) { notify(door) }
       };
+
+      var create = function(data,i) {
+        var door = new Door(data);
+        if (typeof door.sensor === "undefined") {
+          door.label = 'offline-' + i;
+        }
+        var template = $('#template').clone();
+        template.find('.name').text(door.name);
+        template.attr("id", door.label);
+        var color = colors[i % colors.length];
+        template.data('icon', icons[color]);
+        template.find('.notify-pref').click(function() {
+          $(this).toggleClass("notify-enable");
+          $(this).toggleClass("glyphicon-heart-empty");
+          $(this).toggleClass("glyphicon-heart");
+        });
+        $('#doorlist').append(template);
+
+        $.getJSON( door.path, function(data) {
+          update(data,true);
+          pusher.subscribe('change_events').bind(door.label, update);
+        }).fail( function() {
+          update(door,true);
+        });
+
+      }
+
+      var notify = function(door) {
+        if (typeof door.state === "undefined") { return }
+        switch (door.state) {
+          case "open":
+            var message = "just opened!";
+            break;
+          case "closed":
+            var message = "just closed :(";
+            break;
+        }
+        if (row.find('.notify-enable').length == 1) {
+
+          var notification = window.webkitNotifications.createNotification(
+            row.data('icon'),row.find('.name').text(),
+            message
+          );
+
+          notification.onclick = function () {
+            notification.close();
+          }
+          notification.show();
+        }
+      }
+
+      // Generate a set of icons for notifications from our color palette.
+      // Order must match .status-box:nth-of-type() declarations.
+      var color_data = {
+        "#1564f9": "UVZPl4Z7ha",
+        "#3fc41b": "U/xButvkTR",
+        "#fa8e1f": "X6jh83IXPs",
+        "#4ca8ea": "VMqOr4+3T5",
+        "#f71347": "X3E0eeps0u",
+        "#fcc124": "X8wST1RrWw"
+      };
+      var icons = [];
+      var colors = [];
+      $.each(color_data, function(color, magic){
+        colors.push(color);
+        icons[color] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAAAA1BMVE"+magic+"AAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC"
+      });
 
       /* Load config, populate DOM and subscribe to Pusher events */
       $.getJSON( "config.json", function( config ) {
         pusher = new Pusher(config.pusher);
         $.each( config.doors, function( i, data ) {
-          var door = new Door(data);
-          if (typeof door.sensor === "undefined") {
-            door.label = 'offline-' + i;
-          }
-          var template = $('#status-box-template').clone();
-          template.attr("id", door.label);
-          template.find('.name').text(door.name);
-          $('#doorlist').append(template);
-          $.getJSON( door.path, function(data) {
-            update(data,true);
-            pusher.subscribe('change_events').bind(door.label, update);
-          }).fail( function() {
-            update(door);
-          });
+          create(data,i);
         });
-
       });
 
       // Update relative time presentation once per second.
