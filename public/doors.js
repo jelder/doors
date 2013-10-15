@@ -23,45 +23,44 @@ var notify_is_possible = function() {
 
 var update = function(data,skip_notify) {
   var door = new Door(data);
-  row = $('#' + door.label);
+  $row = $('#' + door.label);
   if (typeof door.state === "undefined") {
-    row.find('.status-box').addClass('offline');
+    $row.find('.status-box').addClass('offline');
   } else {
-    row.find('.status-box').removeClass('open closed offline').addClass(door.state);
-    row.find('.state').text(door.state);
-    row.find('.time').data("timestamp", door.timestamp);
-    row.find('.time').text(" since " + moment(door.timestamp).fromNow());
+    $row.find('.status-box').removeClass('open closed offline').addClass(door.state);
+    $row.find('.state').text(door.state);
+    $row.find('.time').data("timestamp", door.timestamp).text(" since " + moment(door.timestamp).fromNow());
   }
   if (!skip_notify) { notify(door) }
 };
 
 var create = function(data,i) {
+  var color = colors[i % colors.length];
   var door = new Door(data);
   if (typeof door.sensor === "undefined") {
     door.label = 'offline-' + i;
   }
-  var template = $('#template').clone();
-  template.find('.name').text(door.name);
-  template.attr("id", door.label);
-  var color = colors[i % colors.length];
-  template.data('icon', icons[color]);
+  var $template = $('#template').clone();
+  $template.find('.name').text(door.name);
+  $template.attr("id", door.label).data('icon', icons[color]);
   if (notify_is_possible() && door.status != 'offline') {
-    var notify_pref = jQuery('<span class="notify-pref glyphicon glyphicon-heart-empty"></span>');
-    notify_pref.click(function() {
-      var elem = $(this);
-      elem.toggleClass("notify-enable")
-        .toggleClass("glyphicon-heart-empty")
-        .toggleClass("glyphicon-heart");
-      if (elem.hasClass("notify-enable")) {
-        $.cookie(door.label+'-notify', true)
-      } else {
-        $.removeCookie(door.label+'-notify')
-      }
-    });
-    if ($.cookie(door.label+'-notify')) { notify_pref.click() }
-    template.find('.frame').prepend(notify_pref)
+    var $notify_pref = jQuery('<span/>')
+      .addClass('notify-pref glyphicon glyphicon-heart-empty')
+      .click(function() {
+        var $elem = $(this);
+         $elem.toggleClass("notify-enable")
+           .toggleClass("glyphicon-heart-empty")
+           .toggleClass("glyphicon-heart");
+         if ($elem.hasClass("notify-enable")) {
+           $.cookie(door.label+'-notify', true)
+         } else {
+           $.removeCookie(door.label+'-notify')
+         }
+      })
+    if ($.cookie(door.label+'-notify')) { $notify_pref.click() }
+    $template.find('.frame').prepend($notify_pref)
   }
-  $('#doorlist').append(template);
+  $('#doorlist').append($template);
 
   $.getJSON( door.path, function(data) {
     update(data,true);
