@@ -8,6 +8,8 @@ function Door(data) {
   this.label = data.host + '-' + data.sensor;
 }
 
+var notifications = {};
+
 var notify_is_possible = function() {
   if (window.hasOwnProperty('webkitNotifications')) {
     if (window.webkitNotifications.checkPermission() == 0) {
@@ -68,30 +70,35 @@ var create = function(data,i) {
   }).fail( function() {
     update(door,true);
   });
+
+  notifications[door.label] = [];
 }
 
 var notify = function(door) {
-  if (typeof door.state === "undefined") { return }
-  switch (door.state) {
-    case "open":
-      var message = "just opened!";
-      break;
-    case "closed":
-      var message = "just closed :(";
-      break;
-  }
-  if (row.find('.notify-enable').length == 1) {
+  var $row = $('#'+door.label);
+  if (door.state == "open") {
+    if ($row.find('.notify-enable').length == 1) {
 
-    var notification = window.webkitNotifications.createNotification(
-      row.data('icon'),row.find('.name').text(),
-      message
-    );
+      var notification = window.webkitNotifications.createNotification(
+        $row.data('icon'),
+        $row.find('.name').text(),
+        "door is now open"
+      );
 
-    notification.onclick = function () {
-      notification.close();
+      notification.onclick = function () {
+        notification.close();
+      }
+
+      notifications[door.label].push(notification);
+
+      notification.show();
     }
-    notification.show();
+  } else {
+    notifications[door.label].forEach(function(notification){
+      notification.close();
+    });
   }
+
 }
 
 // Generate a set of icons for notifications from our color palette.
