@@ -2,6 +2,7 @@ require 'logger'
 require 'time'
 require 'door_agent/configuration'
 require 'door_agent/message'
+require 'digiusb'
 
 class DoorAgent
 
@@ -37,10 +38,9 @@ class DoorAgent
   attr_accessor :config, :logger, :doors
 
   def run
-    SerialPort.open(config.assert!(:serial), 9600, 8, 1, SerialPort::NONE) do |serial_port|
-      while string = serial_port.gets
-        handle_message(string)
-      end
+    spark = DigiUSB.sparks.last
+    while string = spark.gets
+      handle_message(string)
     end
   end
 

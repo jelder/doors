@@ -8,8 +8,17 @@ GEM
       uuidtools (~> 2.1)
     celluloid (0.15.1)
       timers (~> 1.1.0)
+    colored (1.2)
+    colorist (0.0.2)
+    digiusb (1.0.5)
+      colored (>= 1.2)
+      colorist (>= 0.0.2)
+      libusb (>= 0.2.0)
+    ffi (1.9.0)
     httpclient (2.3.4.1)
     json (1.8.0)
+    libusb (0.3.4)
+      ffi (>= 1.0)
     multi_json (1.8.0)
     nokogiri (1.5.10)
     pusher (0.12.0)
@@ -30,6 +39,7 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   aws-sdk
+  digiusb
   pusher
   serialport
   slop

@@ -1,3 +1,6 @@
+#include <DigiUSB.h>
+#include <stdarg.h>
+
 /*
   State change detection (edge detection)
  	
@@ -25,52 +28,71 @@ This example code is in the public domain.
  
  */
 
-const int  buttonPin = 2;    // the pin that the pushbutton is attached to
-const int ledPin = 13;       // the pin that the LED is attached to
+#define NELEMS(x)  (sizeof(x) / sizeof(x[0]))
 
-int buttonState = 0;         // current state of the button
-int lastButtonState = 0;     // previous state of the button
+const int ledPin = 1;        // the pin that the LED is attached to
+const int doorPins[] = {2};
+// const int doorPins[] = {0, 2, 3, 4, 5};
+
+int doorStates[] = {LOW, LOW, LOW, LOW, LOW};
+int lastDoorStates[] = {LOW, LOW, LOW, LOW, LOW};
 
 void setup() {
-  // initialize the button pin as a input:
-  pinMode(buttonPin, INPUT);
-  // initialize the LED as an output:
+  int i;
+
+  // initialize the door pins as input:
+  for(i=0; i<NELEMS(doorPins); i++){
+    pinMode(doorPins[i], INPUT);
+  }
+
+  // initialize the LED as output:
   pinMode(ledPin, OUTPUT);
   // initialize serial communication:
-  Serial.begin(9600);
+  DigiUSB.begin();
 }
 
+void handleDoor(const int pinId) {
+  int pin = doorPins[pinId];
+  int lastDoorState = lastDoorStates[pinId];
+  int doorState = digitalRead(pin);
+  char* digiUSBLine;
 
-void loop() {
-  // read the pushbutton input pin:
-  buttonState = digitalRead(buttonPin);
 
-  // compare the buttonState to its previous state
-  if (buttonState != lastButtonState) {
-    // if the state has changed, increment the counter
-    if (buttonState == HIGH) {
-      // if the current state is HIGH then the button
-      // wend from off to on:
-      Serial.println("door:1 state:closed");
-    } 
-    else {
-      // if the current state is LOW then the button
-      // wend from on to off:
-      Serial.println("door:1 state:open"); 
+  // // compare the doorState to its previous state
+  if (doorState != lastDoorState) {
+    // if the pin is low, the door is open. Otherwise it's closed
+    if(doorState == LOW) {
+      digiUSBLine = "sensor:# state:open";
+    } else {
+      digiUSBLine = "sensor:# state:closed";
     }
-    // Delay a little bit to avoid bouncing
-    delay(50);
+
+    // horrible, horrible hack to write the sensor pin.
+    // Doing this because sprintf is crashing for some reason...
+    if(pin >= 0 && pin <= 9) {
+      digiUSBLine[7] = ('0' + pin);
+    }
+    
+    DigiUSB.println(digiUSBLine);
   }
+
   // save the current state as the last state, 
   //for next time through the loop
-  lastButtonState = buttonState;  
+  lastDoorStates[pinId] = doorState;  
 }
 
+void loop() {
+  DigiUSB.refresh();
+  
+  int i;
+  int ledState = LOW;
+  for(i=0; i<NELEMS(doorPins); i++){
+    handleDoor(i);
+    ledState |= doorStates[i];
+  }
+  digitalWrite(ledPin, ledState);
 
-
-
-
-
-
-
+  // Delay a little bit to avoid bouncing
+  delay(50);
+}
 
