@@ -47,12 +47,12 @@ var create = function(data,i) {
   $template.attr("id", door.label).data('icon', icons[color]);
   if (notify_is_possible() && door.status != 'offline') {
     var $notify_pref = jQuery('<span/>')
-      .addClass('notify-pref glyphicon glyphicon-heart-empty')
+      .addClass('notify-pref fa fa-square-o')
       .click(function() {
         var $elem = $(this);
          $elem.toggleClass("notify-enable")
-           .toggleClass("glyphicon-heart-empty")
-           .toggleClass("glyphicon-heart");
+           .toggleClass("fa-square-o")
+           .toggleClass("fa-check-square-o");
          if ($elem.hasClass("notify-enable")) {
            $.cookie(door.label+'-notify', true)
          } else {
