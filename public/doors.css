@@ -44,9 +44,9 @@ body {
   max-width: 500px;
   height: 100px;
   padding: 10px;
-  -webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
-  border-radius: 15px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
 }
 
 .notify-pref {
