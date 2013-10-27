@@ -38,9 +38,16 @@ class DoorAgent
   attr_accessor :config, :logger, :doors
 
   def run
-    spark = DigiUSB.sparks.last
-    while string = spark.gets
-      handle_message(string)
+    loop do
+      spark = DigiUSB.sparks.first
+      if spark.nil?
+        logger.info "Looking for DigiUSB device..."
+        sleep 2
+        next
+      end
+      while string = spark.gets
+        handle_message(string)
+      end
     end
   end
 
