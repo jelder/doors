@@ -22,9 +22,9 @@ The site stores a single cookie for each checkbox. We plan to move the site to S
 
 The project relies on a hardware platform consisting of a microcontroller ([Digispark](http://digistump.com/products/1) running our Arduino code) connected to a pair of magnetic reed switches (of the type used in security systems), which is in turn connected to via USB to a computer running the Door Agent (ruby). The Door Agent is responsible for announcing changes in doors' states in real time to website visitors.
 
-The app is a static site hosted on Amazon S3.
-
 One of these devices is installed in the server room and is responsible for the Gutenberg conference room's door. Another is connected to the Mac mini behind the dashboard screen by the engineering team's couches.
+
+The app is a static site hosted on Amazon S3.
 
 ## Bugs
 
