@@ -2,7 +2,7 @@
 
 This project aims to solve the problem of people walking half way across the office only to find a room they want to use is occupied, then either waiting in line or returning to their desk.
 
-The solution is a minimal web page which can be consulted anonymously before making the trek. Think of it as *async IO for bathrooms*.
+The solution is a minimal web page which can be consulted anonymously before making the trek. Think of it as *event-driven IO for physical spaces*.
 
 ## User Experience
 
