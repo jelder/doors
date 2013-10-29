@@ -6,7 +6,7 @@ The solution is a minimal web page which can be consulted anonymously before mak
 
 ## User Experience
 
-![Desktop Screenshot](http://doors.boundless.com/screenshots/desktop_screenshot.png "Desktop Screenshot")
+![Desktop Screenshot](https://raw.github.com/jelder/doors/master/screenshots/desktop_screenshot.png "Desktop Screenshot")
 
 The app is designed to be used transiently and anonymously.
 
