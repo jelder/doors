@@ -14,6 +14,10 @@ Each doors' status, open or closed and for approximately how long, is updated in
 
 If using a compatible web browser (Safari, Chrome, and possibly others), a checkbox will appear next to each door. Checking this box will cause a desktop notification to appear whenever the door is open. These work as long the site is open in a tab, even if the browser window is hidden. This preference will be remembered until the users' next visit.
 
+## Desktop Notifications
+
+If you're using Safari, desktop notifications should work out of the box. Chrome may require you to first visit `chrome://flags` and enable "Rich Notifications," then `chrome://settings/content` and select either "Allow all sites to show desktop notifications" or "Ask me when a site wants to show desktop notifications (recommended)."
+
 ### Privacy
 
 The site stores a single cookie for each checkbox. We plan to move the site to SSL in the near future. It does not use Google Analytics or any other tracking software.
