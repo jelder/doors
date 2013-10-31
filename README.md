@@ -24,7 +24,7 @@ The project relies on a hardware platform consisting of a microcontroller ([Digi
 
 ![Mark 1](https://raw.github.com/jelder/doors/master/screenshots/hardware.jpg "Mark 1")
 
-One of these devices is installed in the server room and is responsible for the Gutenberg conference room's door. Another is connected to the Mac mini behind the dashboard screen by the engineering team's couches.
+One of these devices is installed in the server room and is responsible for the Gutenberg conference room's door. Another is connected to the Mac mini behind the dashboard screen by the engineering team's couches and is responsible for both bathrooms.
 
 The app is a static site hosted on Amazon S3.
 
