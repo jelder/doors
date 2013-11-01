@@ -28,7 +28,7 @@ We designed a device consisting of a microcontroller connected to a pair of magn
 
 ![Mark 1](https://raw.github.com/jelder/doors/master/screenshots/hardware.jpg "Mark 1")
 
-[Digispark](http://digistump.com/products/1) was chosen for this because they were deemed inexpensive enough to throw into a wall forever and I had been a backer on [Kickstarter](http://digistump.com/digispark/backers/). It worked out really well, but one could probably use any Arduino compatible board with only minor changes to the sketc.
+[Digispark](http://digistump.com/products/1) was chosen for this because they were deemed inexpensive enough to throw into a wall forever and I had been a backer on [Kickstarter](http://digistump.com/digispark/backers/). It worked out really well, but one could probably use any Arduino compatible board with only minor changes to the sketch.
 
 The device is connected via USB to a computer running the Door Agent (ruby). The Door Agent handles passing information about the doors' states from the device to the app. The app is a static site hosted on Amazon S3. It's built in jQuery, Bootstrap, Moment.js and uses [Pusher](https://www.pusherapp.com/) for instant updates.
 
