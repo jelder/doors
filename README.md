@@ -24,13 +24,15 @@ The site stores a single cookie for each checkbox. We plan to move the site to S
 
 ## Behind the Scenes
 
-The project relies on a hardware platform consisting of a microcontroller ([Digispark](http://digistump.com/products/1) running our Arduino code) connected to a pair of magnetic reed switches (of the type used in security systems), which is in turn connected to via USB to a computer running the Door Agent (ruby). The Door Agent is responsible for announcing changes in doors' states in real time to website visitors.
+We designed a device consisting of a microcontroller connected to a pair of magnetic reed switches (the kind used in security systems). 
 
 ![Mark 1](https://raw.github.com/jelder/doors/master/screenshots/hardware.jpg "Mark 1")
 
-At [Boundless](https://www.boundless.com/), one of these devices is installed in the server room and is responsible for the Gutenberg conference room's door. Another is connected to the Mac mini behind the dashboard screen by the engineering team's couches and is responsible for both bathrooms.
+[Digispark](http://digistump.com/products/1) was chosen for this because they were deemed inexpensive enough to throw into a wall forever and I had been a backer on [Kickstarter](http://digistump.com/digispark/backers/). It worked out really well, but one could probably use any Arduino compatible board with only minor changes to the sketc.
 
-The app is a static site hosted on Amazon S3.
+The device is connected via USB to a computer running the Door Agent (ruby). The Door Agent handles passing information about the doors' states from the device to the app. The app is a static site hosted on Amazon S3. It's built in jQuery, Bootstrap, Moment.js and uses [Pusher](https://www.pusherapp.com/) for instant updates.
+
+At [Boundless](https://www.boundless.com/), one of these devices is installed in the server room and is responsible for the Gutenberg conference room's door. Another is connected to the Mac mini behind the dashboard screen by the engineering team's couches and is responsible for both bathrooms.
 
 ## Bugs
 
