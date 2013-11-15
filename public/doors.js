@@ -42,7 +42,7 @@ var create = function(data,i) {
   if (typeof door.sensor === "undefined") {
     door.label = 'offline-' + i;
   }
-  var $template = $('#template').clone();
+  var $template = $($('script#row_template').text())
   $template.find('.name').text(door.name);
   $template.attr("id", door.label).data('icon', icons[color]);
   if (notify_is_possible() && door.status != 'offline') {

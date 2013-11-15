@@ -9,16 +9,18 @@
   </head>
   <body>
     <div id="doorlist" class="container"></div>
-    <div id="template" class="row">
-      <span class="status-box offline">
-        <div class="frame">
-          <div class="text-center">
-            <div class="name"></div>
-            <span class="time"/>
+    <script id="row_template" type="text/html">
+      <div class="row">
+        <span class="status-box offline">
+          <div class="frame">
+            <div class="text-center">
+              <div class="name"></div>
+              <span class="time"/>
+            </div>
           </div>
-        </div>
-      </span>
-    </div>
+        </span>
+      </div>
+    </script>
 
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//js.pusher.com/2.1/pusher.min.js"></script>
