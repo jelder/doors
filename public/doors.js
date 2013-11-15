@@ -86,6 +86,7 @@ var notify = function(door) {
       );
 
       notification.onclick = function () {
+        $("#"+door.label).find('.notify-pref').click();
         notification.close();
       }
 
