@@ -2,3 +2,5 @@
 env.sh
 public/doors/**
 public/config.json
+doors.err.log
+doors.log
